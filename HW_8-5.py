@@ -1,23 +1,47 @@
 """Продолжить работу над четвертым(видимо) заданием. Разработать методы, отвечающие за приём оргтехники на склад и
 передачу в определенное подразделение компании. Для хранения данных о наименовании и количестве единиц оргтехники, а
 также других данных, можно использовать любую подходящую структуру, например словарь."""
-
+# my_list_stor = {}
+# my_list_office = {}
+# my_list_tech = {}
 
 class Storage:
 
-    my_list_stor = []
-    @classmethod
-    def add_stor(cls, location, amount):
-        Storage.my_list_stor.extend((location.__name__, {cls.__name__: amount}))
-        print(Storage.my_list_stor)
+    my_list_stor = {}
+    my_list_office = {}
+    my_list_tech = {}
 
+    @classmethod
+    def add_stor(cls, amount):
+        Storage.my_list_stor[cls.__name__] = amount
+        print(f'Поступило на склад: {Storage.my_list_stor}')
 
     @classmethod
     def move_in_subunit(cls, new_location, move_amount):
-        my_list_subunit = []
-        Storage.my_list_stor[0] = new_location
-        Storage.my_list_stor[1][cls.__name__] = move_amount
-        Storage.my_list_subunit.extend
+        if new_location == 'office' and Storage.my_list_stor[cls.__name__] != 0:
+            if Storage.my_list_stor[cls.__name__] >= move_amount:
+                Storage.my_list_office[cls.__name__] = move_amount
+                Storage.my_list_stor[cls.__name__] = Storage.my_list_stor[cls.__name__] - move_amount
+                print(f'Перемещено в офис: {Storage.my_list_office}. Остаток на складе: {Storage.my_list_stor}')
+            elif Storage.my_list_stor[cls.__name__] < move_amount:
+                differ_move = move_amount - Storage.my_list_stor[cls.__name__]
+                Storage.my_list_office[cls.__name__] = Storage.my_list_stor[cls.__name__]
+                Storage.my_list_stor[cls.__name__] = 0
+                print(f'Перемещено в офис: {Storage.my_list_office}. Остаток на складе: {Storage.my_list_stor}'
+                      f'Необходимо докупить единиц перемещаемой техники - {differ_move}')
+        elif new_location == 'tech' and Storage.my_list_stor[cls.__name__] != 0:
+            if Storage.my_list_stor[cls.__name__] >= move_amount:
+                Storage.my_list_tech[cls.__name__] = move_amount
+                Storage.my_list_stor[cls.__name__] = Storage.my_list_stor[cls.__name__] - move_amount
+                print(f'Перемещено в офис: {Storage.my_list_tech}. Остаток на складе: {Storage.my_list_stor}')
+            elif Storage.my_list_stor[cls.__name__] < move_amount:
+                differ_move = move_amount - Storage.my_list_stor[cls.__name__]
+                Storage.my_list_tech[cls.__name__] = Storage.my_list_stor[cls.__name__]
+                Storage.my_list_stor[cls.__name__] = 0
+                print(f'Перемещено в тех.отдел: {Storage.my_list_tech}. Остаток на складе: {Storage.my_list_stor}'
+                      f'Необходимо докупить единиц перемещаемой техники - {differ_move}')
+        else:
+            print('Введено некорректное наименование подразделения! Попробуйте еще.')
 
 
 class OffEquip(Storage):
@@ -55,4 +79,5 @@ class Xerox(OffEquip):
 
 scan = Scanner('Зеленый', 23.2, 'Canon', 14.5, '4800x4800', 'струйный')
 printer = Printer('Зеленый', 23.2, 'Canon', 14.5, 4800, 'струйный')
-Scanner.add_stor(Storage, 5)
+scan.add_stor(5)
+scan.move_in_subunit('office', 4)
